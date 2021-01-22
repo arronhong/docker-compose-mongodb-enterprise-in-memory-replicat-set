@@ -1,0 +1,44 @@
+version: '3.7'
+
+services:
+  rs-setup:
+    image: mongo
+    restart: on-failure
+    volumes:
+      - ./mongo/setup.sh:/scripts/setup.sh
+    command: ["bash", "/scripts/setup.sh"]
+    depends_on:
+      - rs1
+      - rs2
+      - rs3
+
+  rs1:
+    build:
+      context: ./mongo
+      args:
+        - MONGO_PACKAGE=mongodb-enterprise
+        - MONGO_REPO=repo.mongodb.com
+    command: ["mongod", "--bind_ip_all", "--storageEngine", "inMemory", "--replSet", "RS", "--port", "27041"]
+    ports:
+      - 27041:27041
+
+  rs2:
+    build:
+      context: ./mongo
+      args:
+        - MONGO_PACKAGE=mongodb-enterprise
+        - MONGO_REPO=repo.mongodb.com
+    command: ["mongod", "--bind_ip_all", "--storageEngine", "inMemory", "--replSet", "RS", "--port", "27042"]
+    ports:
+      - 27042:27042
+
+  rs3:
+    build:
+      context: ./mongo
+      args:
+        - MONGO_PACKAGE=mongodb-enterprise
+        - MONGO_REPO=repo.mongodb.com
+    command: ["mongod", "--bind_ip_all", "--storageEngine", "inMemory", "--replSet", "RS", "--port", "27043"]
+    ports:
+      - 27043:27043
+
